@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NERVA · Decision Receipt — VGK YES @ 59¢</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1220;
+    --ink:#E8EaEF;
+    --muted:#8A93A6;
+    --faint:#586073;
+    --rule:#1c2333;
+    --amber:#C8841C;
+    --sky:#1E3A6B;
+    --red:#7A2E2E;
+    --green:#3FA66A;
+    --accent:var(--amber); /* WAIT/HOLD */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+  body{display:flex;justify-content:center;padding:48px 20px 0}
+  .doc{width:100%;max-width:720px;padding-bottom:8px}
+
+  /* header */
+  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--rule)}
+  .wordmark{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .wordmark h1{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;letter-spacing:.32em;color:var(--ink)}
+  .wordmark .sub{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;color:var(--faint)}
+  .signals{display:flex;gap:14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em}
+  .sig{display:flex;align-items:center;gap:6px;color:var(--faint)}
+  .sig.on{color:var(--muted)}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--faint)}
+  .dot.green{background:var(--green);animation:pulse 1.8s ease-in-out infinite}
+  .dot.amber{background:var(--amber);animation:pulse 1.4s ease-in-out infinite}
+  .dot.dim{background:#2a3142}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  .stamp{text-align:right;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);line-height:1.6;white-space:nowrap}
+
+  /* trade card */
+  .section-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.24em;color:var(--faint);margin:32px 0 14px}
+  .trade-name{font-family:'Newsreader',serif;font-size:26px;font-weight:500;line-height:1.25}
+  .trade-meta{display:flex;flex-wrap:wrap;gap:28px;margin-top:14px}
+  .trade-meta div{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+  .trade-meta span{color:var(--faint);display:block;font-size:9.5px;letter-spacing:.16em;margin-bottom:3px}
+
+  /* verdict */
+  .verdict-wrap{margin:46px 0 40px;text-align:center}
+  .verdict{font-family:'Newsreader',serif;font-weight:500;font-size:104px;line-height:.9;letter-spacing:.02em;color:var(--accent)}
+  .verdict-cap{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.3em;color:var(--faint);margin-top:14px}
+
+  /* metrics */
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+  .metric{background:var(--bg);padding:20px 16px}
+  .metric .k{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;color:var(--faint)}
+  .metric .v{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:500;margin-top:8px}
+  .metric .n{font-size:9px;color:var(--faint);margin-top:4px;font-family:'Inter'}
+  .metric.brake .v{font-size:16px;letter-spacing:.1em;color:var(--muted);padding-top:9px}
+
+  /* bloch */
+  .bloch-row{display:flex;gap:34px;align-items:center;margin-top:36px;flex-wrap:wrap}
+  .bloch-svg{flex:0 0 auto}
+  .bloch-cap{flex:1 1 240px;min-width:220px}
+  .bloch-cap p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);line-height:1.9}
+  .bloch-cap p span{color:var(--faint)}
+
+  /* reasoning */
+  .reasoning{font-family:'Newsreader',serif;font-size:18.5px;line-height:1.66;margin-top:14px;color:#D6DAE2}
+  .reasoning b{font-weight:500;color:var(--ink)}
+
+  /* provenance */
+  .prov{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);line-height:2.05;margin-top:10px}
+  .prov .axis{display:flex;justify-content:space-between;max-width:420px}
+  .prov .axis .w{color:var(--faint)}
+  .prov .math{margin-top:16px;color:var(--ink)}
+  .prov .math .lbl{color:var(--faint)}
+
+  /* receipt */
+  .receipt{margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);line-height:2.3}
+  .receipt .row span{color:var(--faint);margin-right:10px}
+  .box{display:inline-block;width:11px;height:11px;border:1px solid var(--faint);margin-right:6px;vertical-align:-1px}
+
+  /* footer */
+  .foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--rule);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--faint)}
+
+  /* telemetry */
+  .telemetry{margin-top:10px;padding:9px 0 30px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--faint);letter-spacing:.06em;overflow:hidden;white-space:nowrap}
+  .telemetry .cur{display:inline-block;width:7px;height:13px;background:var(--amber);vertical-align:-2px;margin-left:4px;animation:blink 1s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+  .telemetry b{color:var(--muted);font-weight:400}
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <!-- HEADER -->
+  <div class="head">
+    <div>
+      <div class="wordmark">
+        <h1>NERVA</h1>
+        <span class="sub">· DECISION RECEIPT</span>
+      </div>
+      <div class="signals" style="margin-top:12px">
+        <div class="sig on"><span class="dot green"></span>LOCK</div>
+        <div class="sig"><span class="dot dim"></span>BRAKE</div>
+        <div class="sig"><span class="dot dim"></span>OVR</div>
+        <div class="sig on"><span class="dot green"></span>SIG</div>
+      </div>
+    </div>
+    <div class="stamp">
+      a3f1c97e20b4<br>
+      2026-06-04T08:06Z
+    </div>
+  </div>
+
+  <!-- TRADE CARD -->
+  <div class="section-label">WHAT WAS SCORED</div>
+  <div class="trade-name">Buy YES · Vegas Golden Knights win Stanley Cup @ 59¢</div>
+  <div class="trade-meta">
+    <div><span>STAKES</span>~$88 (hypothetical, pre-funded)</div>
+    <div><span>HORIZON</span>Series resolution</div>
+    <div><span>REVERSIBILITY</span>Tradeable pre-settlement</div>
+    <div><span>DOMAIN</span>Prediction-market</div>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="verdict-wrap">
+    <div class="verdict">WAIT</div>
+    <div class="verdict-cap">EVIDENCE BELOW THRESHOLD · C &lt; τ</div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric"><div class="k">C</div><div class="v" style="color:var(--amber)">0.34</div><div class="n">aggregate confidence</div></div>
+    <div class="metric"><div class="k">τ</div><div class="v">0.66</div><div class="n">adaptive threshold</div></div>
+    <div class="metric"><div class="k">S</div><div class="v">0.92</div><div class="n">von Neumann entropy</div></div>
+    <div class="metric brake"><div class="k">BRAKE</div><div class="v">DISENGAGED</div><div class="n">reversible position</div></div>
+  </div>
+
+  <!-- BLOCH -->
+  <div class="bloch-row">
+    <svg class="bloch-svg" width="180" height="180" viewBox="0 0 180 180">
+      <defs>
+        <clipPath id="circclip"><circle cx="90" cy="90" r="74"/></clipPath>
+        <linearGradient id="scan" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8841C" stop-opacity="0"/>
+          <stop offset="50%" stop-color="#C8841C" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#C8841C" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <circle cx="90" cy="90" r="74" fill="none" stroke="#1c2333" stroke-width="1"/>
+      <circle cx="90" cy="90" r="74" fill="#0d1626"/>
+      <!-- axes -->
+      <line x1="16" y1="90" x2="164" y2="90" stroke="#1c2333" stroke-width="1"/>
+      <line x1="90" y1="16" x2="90" y2="164" stroke="#1c2333" stroke-width="1"/>
+      <!-- unit circle ref -->
+      <circle cx="90" cy="90" r="74" fill="none" stroke="#222b3d" stroke-width="1" stroke-dasharray="2 4"/>
+      <!-- shrunken vector |r|=0.34 -> 74*0.34≈25px, direction from r_eff(0.30,0.10,0.12) projected -->
+      <g clip-path="url(#circclip)">
+        <rect class="scanrect" x="16" y="0" width="148" height="22" fill="url(#scan)">
+          <animate attributeName="y" values="-22;180" dur="3.6s" repeatCount="indefinite"/>
+        </rect>
+      </g>
+      <line x1="90" y1="90" x2="113" y2="79" stroke="#C8841C" stroke-width="1.5"/>
+      <circle cx="113" cy="79" r="3.5" fill="#C8841C"/>
+      <circle cx="90" cy="90" r="2" fill="#586073"/>
+    </svg>
+    <div class="bloch-cap">
+      <p><span>r_eff =</span> (0.30, 0.10, 0.12)</p>
+      <p><span>|r_eff| =</span> 0.34 &nbsp;<span>(= C)</span></p>
+      <p><span>purity →</span> high entropy</p>
+      <p style="color:var(--faint);font-size:10px;margin-top:8px;line-height:1.7">Vector shrunk to confidence radius. Far from the pure-state boundary: conviction and evidence structure disagree.</p>
+    </div>
+  </div>
+
+  <!-- REASONING -->
+  <div class="section-label">REASONING</div>
+  <div class="reasoning">
+    Your strongest axis is <b>falsifiability</b> — you named a concrete, observable exit (Carolina wins the next two games) and it is still live at 1–0. Your weakest axis is <b>differentiation</b>: every piece of evidence you cited — the two-season numbers, Mark Stone, the 1–0 lead — is already priced into the 59¢ line. A thesis that agrees with the market and pays the market's price carries no edge; you would be buying the favorite at fair odds, not exploiting a gap. C sits well below τ, and entropy is high because your directional conviction and the structure of your evidence point in different directions. <b>WAIT.</b>
+  </div>
+
+  <!-- PROVENANCE -->
+  <div class="section-label">PROVENANCE</div>
+  <div class="prov">
+    <div class="axis"><span>c_evidence</span><span>0.40 &nbsp;<span class="w">(w 0.30)</span></span></div>
+    <div class="axis"><span>c_differentiation</span><span>0.15 &nbsp;<span class="w">(w 0.25)</span></span></div>
+    <div class="axis"><span>c_falsifiability</span><span>0.65 &nbsp;<span class="w">(w 0.20)</span></span></div>
+    <div class="axis"><span>c_timing</span><span>0.35 &nbsp;<span class="w">(w 0.15)</span></span></div>
+    <div class="axis"><span>c_alignment</span><span>0.25 &nbsp;<span class="w">(w 0.10)</span></span></div>
+    <div class="math">
+      <div><span class="lbl">C  = Σ wᵢcᵢ =</span> 0.34</div>
+      <div><span class="lbl">τ  = τ₀ + αS + βσ + γirr =</span> 0.66</div>
+      <div><span class="lbl">r_eff =</span> (0.30, 0.10, 0.12)&nbsp;&nbsp;<span class="lbl">|r| =</span> 0.34</div>
+      <div><span class="lbl">ρ =</span> ½(I + r_eff·σ)</div>
+    </div>
+  </div>
+
+  <!-- RECEIPT -->
+  <div class="section-label">RECEIPT</div>
+  <div class="receipt">
+    <div class="row"><span>ACTION</span><span class="box"></span>Committed &nbsp;<span class="box"></span>Resized &nbsp;<span class="box"></span>Cancelled &nbsp;<span class="box"></span>Overrode</div>
+    <div class="row"><span>OUTCOME</span><span class="box"></span>Win &nbsp;<span class="box"></span>Loss &nbsp;<span class="box"></span>N/A</div>
+    <div class="row"><span>P&amp;L</span>________________</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="foot">NERVA v11 · STARPOINT LLC · PATENT PENDING</div>
+
+  <!-- TELEMETRY -->
+  <div class="telemetry" id="tele"></div>
+
+</div>
+
+<script>
+  let frame = 4096;
+  const tele = document.getElementById('tele');
+  function render(){
+    tele.innerHTML =
+      'FRAME ' + frame +
+      ' · <b>C</b> 0.34 · <b>τ</b> 0.66 · <b>S</b> 0.92 · <b>Δ</b> -0.32' +
+      ' · BRAKE DISENGAGED · STATE WAIT' +
+      ' · ρ=½(I+r·σ) · r(0.30,0.10,0.12) · #a3f1c97e20b4' +
+      '<span class="cur"></span>';
+  }
+  render();
+  setInterval(()=>{ frame++; render(); }, 1200);
+</script>
+</body>
+</html>

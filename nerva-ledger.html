@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NERVA · Ledger</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink:        #0B1220;
+  --ink-2:      #0F172A;
+  --ink-3:      #1A2336;
+  --bone:       #F1EFE8;
+  --bone-dim:   #D6D2C4;
+  --slate:      #8A8A82;
+  --slate-2:    #5F5E5A;
+  --amber:      #C8841C;
+  --amber-dim:  #8A5B14;
+  --sky:        #1E3A6B;
+  --sky-bright: #4A78C2;
+  --green:      #2F7A52;
+  --red:        #7A2E2E;
+  --rule:       #2A3344;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--ink);
+  color: var(--bone);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at top, rgba(30, 58, 107, 0.06), transparent 60%),
+    radial-gradient(ellipse at bottom, rgba(200, 132, 28, 0.03), transparent 70%),
+    var(--ink);
+  min-height: 100vh;
+  padding: 48px 24px 96px;
+}
+
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  z-index: 100;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ───── header strip ───── */
+.strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--slate);
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 40px;
+}
+.strip .mark { color: var(--bone); }
+.strip .mark span { color: var(--amber); }
+
+h1.page-title {
+  font-family: 'Newsreader', serif;
+  font-weight: 300;
+  font-size: 56px;
+  letter-spacing: -0.02em;
+  margin: 0 0 4px;
+  color: var(--bone);
+}
+.subtitle {
+  font-family: 'Newsreader', serif;
+  font-style: italic;
+  font-size: 17px;
+  color: var(--bone-dim);
+  margin-bottom: 48px;
+  font-weight: 300;
+}
+
+/* ───── calibration panel ───── */
+.calibration {
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 32px 40px;
+  margin-bottom: 48px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.6), transparent);
+  position: relative;
+}
+.calibration::before,
+.calibration::after {
+  content: "";
+  position: absolute;
+  width: 14px; height: 14px;
+  border: 1px solid var(--amber-dim);
+  opacity: 0.45;
+}
+.calibration::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+.calibration::after  { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+.cal-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 32px;
+  align-items: end;
+}
+.cal-cell .lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: 8px;
+}
+.cal-cell .val {
+  font-family: 'Newsreader', serif;
+  font-weight: 300;
+  font-size: 48px;
+  line-height: 1;
+  color: var(--bone);
+  letter-spacing: -0.02em;
+}
+.cal-cell .val.lift { color: var(--amber); }
+.cal-cell .val.lift.positive { color: var(--green); }
+.cal-cell .val.lift.negative { color: var(--red); }
+.cal-cell .unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--slate);
+  letter-spacing: 0.04em;
+  margin-left: 4px;
+}
+.cal-note {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+  font-family: 'Newsreader', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--bone-dim);
+  line-height: 1.5;
+}
+
+/* ───── state distribution bar ───── */
+.dist {
+  margin-top: 28px;
+}
+.dist-bar {
+  display: flex;
+  height: 6px;
+  background: var(--ink-3);
+  overflow: hidden;
+  border-radius: 1px;
+}
+.dist-bar > span { transition: width 600ms cubic-bezier(0.16, 1, 0.3, 1); }
+.dist-bar .commit  { background: var(--green); }
+.dist-bar .hold    { background: var(--sky-bright); }
+.dist-bar .wait    { background: var(--amber); }
+.dist-bar .consult { background: var(--bone-dim); }
+.dist-bar .toxic   { background: var(--red); }
+
+.dist-legend {
+  display: flex;
+  gap: 28px;
+  margin-top: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  flex-wrap: wrap;
+}
+.dist-legend .dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.dist-legend .commit  { color: var(--green); }
+.dist-legend .hold    { color: var(--sky-bright); }
+.dist-legend .wait    { color: var(--amber); }
+.dist-legend .consult { color: var(--bone-dim); }
+.dist-legend .toxic   { color: var(--red); }
+.dist-legend .commit  .dot { background: var(--green); }
+.dist-legend .hold    .dot { background: var(--sky-bright); }
+.dist-legend .wait    .dot { background: var(--amber); }
+.dist-legend .consult .dot { background: var(--bone-dim); }
+.dist-legend .toxic   .dot { background: var(--red); }
+.dist-legend .count { color: var(--bone); margin-left: 4px; font-weight: 500; }
+
+/* ───── action bar ───── */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 11px 22px;
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--bone-dim);
+  cursor: pointer;
+  transition: all 200ms;
+  border-radius: 0;
+}
+.btn:hover { border-color: var(--amber); color: var(--amber); }
+.btn.primary { border-color: var(--amber); color: var(--amber); }
+.btn.primary:hover { background: var(--amber); color: var(--ink); }
+.btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-row .chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--slate);
+  cursor: pointer;
+  border-radius: 0;
+  transition: all 150ms;
+}
+.filter-row .chip:hover { color: var(--bone-dim); }
+.filter-row .chip.active { color: var(--ink); background: var(--bone); border-color: var(--bone); }
+.filter-row .chip-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--slate-2);
+  margin-right: 8px;
+}
+
+/* ───── ledger table ───── */
+.ledger {
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.4);
+}
+.ledger-head {
+  display: grid;
+  grid-template-columns: 90px 1fr 80px 100px 100px 90px 100px;
+  gap: 16px;
+  padding: 16px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--slate);
+  border-bottom: 1px solid var(--rule);
+}
+.row {
+  display: grid;
+  grid-template-columns: 90px 1fr 80px 100px 100px 90px 100px;
+  gap: 16px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--rule);
+  align-items: center;
+  font-size: 13px;
+  transition: background 150ms;
+}
+.row:hover { background: rgba(200, 132, 28, 0.03); }
+.row:last-child { border-bottom: none; }
+
+.row .date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--slate);
+  letter-spacing: 0.04em;
+}
+.row .decision {
+  font-family: 'Newsreader', serif;
+  font-size: 15px;
+  color: var(--bone);
+  line-height: 1.35;
+  font-weight: 300;
+}
+.row .decision .domain {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--slate-2);
+  margin-top: 4px;
+}
+.state-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  padding: 4px 10px;
+  border-radius: 1px;
+  display: inline-block;
+  text-align: center;
+}
+.state-pill.commit  { color: var(--green);      border: 1px solid var(--green);      }
+.state-pill.hold    { color: var(--sky-bright); border: 1px solid var(--sky-bright); }
+.state-pill.wait    { color: var(--amber);      border: 1px solid var(--amber);      }
+.state-pill.consult { color: var(--bone-dim);   border: 1px solid var(--bone-dim);   }
+.state-pill.toxic   { color: var(--red);        border: 1px solid var(--red);        }
+
+.row .metric {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--bone-dim);
+  letter-spacing: 0.02em;
+}
+.row .action-sel,
+.row .outcome-sel {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--slate-2);
+  color: var(--bone-dim);
+  padding: 4px 0;
+  width: 100%;
+  cursor: pointer;
+}
+.row .action-sel:focus,
+.row .outcome-sel:focus { outline: none; border-bottom-color: var(--amber); color: var(--amber); }
+.row .action-sel option,
+.row .outcome-sel option { background: var(--ink-2); color: var(--bone); }
+
+.row .pnl-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--slate-2);
+  color: var(--bone);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  width: 100%;
+  padding: 4px 0;
+  letter-spacing: 0.02em;
+  text-align: right;
+}
+.row .pnl-input:focus { outline: none; border-bottom-color: var(--amber); }
+.row .pnl-input.positive { color: var(--green); }
+.row .pnl-input.negative { color: var(--red); }
+
+.row .row-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.row .icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--slate);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  padding: 4px;
+  transition: color 150ms;
+}
+.row .icon-btn:hover { color: var(--amber); }
+.row .icon-btn.delete:hover { color: var(--red); }
+
+/* ───── empty state ───── */
+.empty {
+  padding: 80px 40px;
+  text-align: center;
+  border: 1px dashed var(--rule);
+  border-radius: 2px;
+}
+.empty h2 {
+  font-family: 'Newsreader', serif;
+  font-weight: 300;
+  font-size: 28px;
+  color: var(--bone);
+  margin: 0 0 12px;
+}
+.empty p {
+  font-family: 'Newsreader', serif;
+  font-style: italic;
+  color: var(--bone-dim);
+  font-size: 15px;
+  margin: 0 0 24px;
+  font-weight: 300;
+}
+.empty code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: var(--ink-3);
+  padding: 2px 6px;
+  border-radius: 1px;
+  color: var(--amber);
+  font-weight: 500;
+}
+
+/* ───── modal ───── */
+.modal-shade {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 18, 32, 0.88);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal-shade.open { display: flex; }
+.modal {
+  background: var(--ink-2);
+  border: 1px solid var(--rule);
+  padding: 40px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.modal::before,
+.modal::after {
+  content: "";
+  position: absolute;
+  width: 14px; height: 14px;
+  border: 1px solid var(--amber-dim);
+  opacity: 0.5;
+}
+.modal::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+.modal::after  { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+.modal h2 {
+  font-family: 'Newsreader', serif;
+  font-weight: 300;
+  font-size: 32px;
+  margin: 0 0 8px;
+  color: var(--bone);
+  letter-spacing: -0.01em;
+}
+.modal .help {
+  font-family: 'Newsreader', serif;
+  font-style: italic;
+  color: var(--bone-dim);
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.modal label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: 8px;
+  margin-top: 18px;
+}
+.modal textarea,
+.modal input[type="text"] {
+  width: 100%;
+  background: var(--ink);
+  border: 1px solid var(--rule);
+  color: var(--bone);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 12px;
+  resize: vertical;
+  border-radius: 1px;
+  line-height: 1.5;
+}
+.modal textarea { min-height: 220px; }
+.modal textarea:focus,
+.modal input:focus { outline: none; border-color: var(--amber); }
+
+.modal .modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: flex-end;
+}
+
+.error {
+  color: var(--red);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  margin-top: 8px;
+  letter-spacing: 0.04em;
+}
+.success {
+  color: var(--green);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  margin-top: 8px;
+  letter-spacing: 0.04em;
+}
+
+/* ───── footer ───── */
+.foot {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--slate-2);
+}
+.foot .sig {
+  font-family: 'Newsreader', serif;
+  font-style: italic;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--bone-dim);
+}
+
+@media (max-width: 900px) {
+  .cal-row { grid-template-columns: 1fr 1fr; }
+  .ledger-head, .row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .ledger-head { display: none; }
+  .row {
+    padding: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .row > * { margin-bottom: 6px; }
+  h1.page-title { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="strip">
+    <div class="mark">NERVA <span>·</span> Ledger</div>
+    <div id="updated">—</div>
+  </div>
+
+  <h1 class="page-title">Decision Ledger</h1>
+  <div class="subtitle">Every receipt. Every outcome. The lift score is whatever the lift score is.</div>
+
+  <!-- ─── CALIBRATION PANEL ─── -->
+  <div class="calibration">
+    <div class="cal-row">
+      <div class="cal-cell">
+        <div class="lbl">Total receipts</div>
+        <div class="val"><span id="cal-total">0</span></div>
+      </div>
+      <div class="cal-cell">
+        <div class="lbl">Resolved</div>
+        <div class="val"><span id="cal-resolved">0</span><span class="unit"> / <span id="cal-total-2">0</span></span></div>
+      </div>
+      <div class="cal-cell">
+        <div class="lbl">Hit rate · followed</div>
+        <div class="val"><span id="cal-followed">—</span><span class="unit">%</span></div>
+      </div>
+      <div class="cal-cell">
+        <div class="lbl">Hit rate · overrode</div>
+        <div class="val"><span id="cal-overrode">—</span><span class="unit">%</span></div>
+      </div>
+    </div>
+
+    <div class="cal-row" style="margin-top: 28px;">
+      <div class="cal-cell">
+        <div class="lbl">Lift score</div>
+        <div class="val lift" id="cal-lift-val">—</div>
+      </div>
+      <div class="cal-cell">
+        <div class="lbl">Net P&amp;L (logged)</div>
+        <div class="val" id="cal-pnl">—</div>
+      </div>
+      <div class="cal-cell">
+        <div class="lbl">Sample to publish</div>
+        <div class="val"><span id="cal-progress">0</span><span class="unit"> / 30</span></div>
+      </div>
+      <div class="cal-cell">
+        <div class="lbl">Status</div>
+        <div class="val" id="cal-status" style="font-size: 18px; line-height: 1.4;">No data</div>
+      </div>
+    </div>
+
+    <div class="dist">
+      <div class="dist-bar" id="dist-bar">
+        <span class="commit" style="width: 0;"></span>
+        <span class="hold" style="width: 0;"></span>
+        <span class="wait" style="width: 0;"></span>
+        <span class="consult" style="width: 0;"></span>
+        <span class="toxic" style="width: 0;"></span>
+      </div>
+      <div class="dist-legend">
+        <span class="commit"><span class="dot"></span>Commit <span class="count" id="ct-commit">0</span></span>
+        <span class="hold"><span class="dot"></span>Hold <span class="count" id="ct-hold">0</span></span>
+        <span class="wait"><span class="dot"></span>Wait <span class="count" id="ct-wait">0</span></span>
+        <span class="consult"><span class="dot"></span>Consult <span class="count" id="ct-consult">0</span></span>
+        <span class="toxic"><span class="dot"></span>Toxic <span class="count" id="ct-toxic">0</span></span>
+      </div>
+    </div>
+
+    <div class="cal-note">
+      Lift score = hit rate when verdict was followed minus hit rate when overrode. Becomes meaningful at 30 resolved decisions with at least 10 overrides. Below that threshold it is suggestive, not defensible.
+    </div>
+  </div>
+
+  <!-- ─── ACTION BAR ─── -->
+  <div class="actions">
+    <button class="btn primary" id="btn-add">+ Add receipt</button>
+    <button class="btn" id="btn-export">↓ Export JSON</button>
+    <button class="btn" id="btn-import">↑ Import JSON</button>
+    <button class="btn danger" id="btn-clear">Clear ledger</button>
+    <input type="file" id="file-import" accept="application/json" style="display:none">
+  </div>
+
+  <!-- ─── FILTERS ─── -->
+  <div class="filter-row">
+    <span class="chip-label">Filter:</span>
+    <button class="chip active" data-filter="all">All</button>
+    <button class="chip" data-filter="COMMIT">Commit</button>
+    <button class="chip" data-filter="HOLD">Hold</button>
+    <button class="chip" data-filter="WAIT">Wait</button>
+    <button class="chip" data-filter="CONSULT">Consult</button>
+    <button class="chip" data-filter="TOXIC">Toxic</button>
+    <button class="chip" data-filter="unresolved">Unresolved</button>
+  </div>
+
+  <!-- ─── LEDGER ─── -->
+  <div id="ledger-container">
+    <div class="empty" id="empty-state">
+      <h2>The ledger is empty.</h2>
+      <p>Score a decision through the NERVA Decision Prompt, then add the receipt JSON here.</p>
+      <button class="btn primary" onclick="document.getElementById('btn-add').click()">+ Add first receipt</button>
+    </div>
+
+    <div class="ledger" id="ledger" style="display:none;">
+      <div class="ledger-head">
+        <div>Date</div>
+        <div>Decision</div>
+        <div>Verdict</div>
+        <div>C / τ</div>
+        <div>Action</div>
+        <div>Outcome</div>
+        <div style="text-align:right">P&amp;L / Del</div>
+      </div>
+      <div id="rows"></div>
+    </div>
+  </div>
+
+  <!-- ─── FOOTER ─── -->
+  <div class="foot">
+    <span>Local storage · your browser · no server</span>
+    <span class="sig">Starpoint LLC · NERVA v11 · patent pending</span>
+  </div>
+
+</div>
+
+<!-- ─── ADD RECEIPT MODAL ─── -->
+<div class="modal-shade" id="modal-add">
+  <div class="modal">
+    <h2>Add receipt</h2>
+    <div class="help">
+      Paste the receipt JSON from a NERVA verdict, or use the kernel CLI:
+      <code>python nerva_kernel.py --json < decision.json</code>.
+      The schema is documented in <code>nerva_kernel.py</code>.
+    </div>
+
+    <label>Receipt JSON</label>
+    <textarea id="json-input" placeholder='{"state":"WAIT","C":0.29,"tau":0.78,"S":0.94,"brake":"ENGAGED","decision_id":"...","timestamp":"...","reasoning":"...","per_axis":{...},"weights":{...}}'></textarea>
+
+    <label>Decision name (override, optional)</label>
+    <input type="text" id="name-input" placeholder="Will appear in the ledger row">
+
+    <label>Domain (override, optional)</label>
+    <input type="text" id="domain-input" placeholder="e.g. prediction-market, operational, personal">
+
+    <div id="add-msg"></div>
+
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-add')">Cancel</button>
+      <button class="btn primary" id="btn-save-receipt">Save receipt</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CLEAR CONFIRM MODAL ─── -->
+<div class="modal-shade" id="modal-clear">
+  <div class="modal" style="max-width: 480px;">
+    <h2>Clear the ledger?</h2>
+    <div class="help">
+      This deletes every receipt in browser storage. There is no undo. Export to JSON first if you want a backup.
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-clear')">Cancel</button>
+      <button class="btn danger" id="btn-confirm-clear">Yes, clear ledger</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── State ─────────────────────────────────────────────
+const STORAGE_KEY = 'nerva_ledger_v1';
+let receipts = [];
+let activeFilter = 'all';
+
+function loadReceipts() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    receipts = raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    receipts = [];
+  }
+}
+function saveReceipts() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(receipts));
+  document.getElementById('updated').textContent =
+    new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+}
+
+// ─── Calibration math ─────────────────────────────────
+function calibration() {
+  const resolved = receipts.filter(r => r.outcome && r.outcome !== '');
+  const followed = resolved.filter(r => r.action !== 'overrode' && r.action !== '');
+  const overrode = resolved.filter(r => r.action === 'overrode');
+
+  function hitRate(arr) {
+    if (arr.length === 0) return null;
+    const wins = arr.filter(r => r.outcome === 'win').length;
+    return wins / arr.length;
+  }
+
+  const hrFollowed = hitRate(followed);
+  const hrOverrode = hitRate(overrode);
+  const lift = (hrFollowed != null && hrOverrode != null)
+    ? (hrFollowed - hrOverrode)
+    : null;
+
+  const netPnl = resolved.reduce((sum, r) => {
+    const n = parseFloat((r.pnl || '0').replace(/[^0-9.\-]/g, ''));
+    return sum + (isNaN(n) ? 0 : n);
+  }, 0);
+
+  return {
+    total: receipts.length,
+    resolved: resolved.length,
+    followed: followed.length,
+    overrode: overrode.length,
+    hrFollowed, hrOverrode, lift,
+    netPnl,
+    states: {
+      COMMIT:  receipts.filter(r => r.state === 'COMMIT').length,
+      HOLD:    receipts.filter(r => r.state === 'HOLD').length,
+      WAIT:    receipts.filter(r => r.state === 'WAIT').length,
+      CONSULT: receipts.filter(r => r.state === 'CONSULT').length,
+      TOXIC:   receipts.filter(r => r.state === 'TOXIC').length,
+    }
+  };
+}
+
+function renderCalibration() {
+  const c = calibration();
+  document.getElementById('cal-total').textContent = c.total;
+  document.getElementById('cal-total-2').textContent = c.total;
+  document.getElementById('cal-resolved').textContent = c.resolved;
+  document.getElementById('cal-followed').textContent =
+    c.hrFollowed != null ? (c.hrFollowed * 100).toFixed(0) : '—';
+  document.getElementById('cal-overrode').textContent =
+    c.hrOverrode != null ? (c.hrOverrode * 100).toFixed(0) : '—';
+
+  const liftEl = document.getElementById('cal-lift-val');
+  if (c.lift != null) {
+    const pct = (c.lift * 100);
+    liftEl.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(0) + '%';
+    liftEl.classList.remove('positive', 'negative');
+    liftEl.classList.add(pct >= 0 ? 'positive' : 'negative');
+  } else {
+    liftEl.textContent = '—';
+    liftEl.classList.remove('positive', 'negative');
+  }
+
+  const pnlEl = document.getElementById('cal-pnl');
+  if (c.netPnl !== 0 || c.resolved > 0) {
+    const sign = c.netPnl >= 0 ? '+' : '−';
+    pnlEl.textContent = sign + '$' + Math.abs(c.netPnl).toLocaleString(undefined, {maximumFractionDigits: 0});
+    pnlEl.style.color = c.netPnl >= 0 ? 'var(--green)' : 'var(--red)';
+  } else {
+    pnlEl.textContent = '—';
+    pnlEl.style.color = '';
+  }
+
+  document.getElementById('cal-progress').textContent = c.resolved;
+
+  let status;
+  if (c.resolved === 0)           status = 'No data';
+  else if (c.resolved < 10)       status = 'Suggestive';
+  else if (c.resolved < 30)       status = 'Indicative';
+  else if (c.overrode < 10)       status = 'Need overrides';
+  else                            status = 'Publishable';
+  document.getElementById('cal-status').textContent = status;
+
+  // distribution bar
+  const totalForDist = c.total || 1;
+  const bar = document.getElementById('dist-bar');
+  bar.querySelector('.commit').style.width  = (c.states.COMMIT  / totalForDist * 100) + '%';
+  bar.querySelector('.hold').style.width    = (c.states.HOLD    / totalForDist * 100) + '%';
+  bar.querySelector('.wait').style.width    = (c.states.WAIT    / totalForDist * 100) + '%';
+  bar.querySelector('.consult').style.width = (c.states.CONSULT / totalForDist * 100) + '%';
+  bar.querySelector('.toxic').style.width   = (c.states.TOXIC   / totalForDist * 100) + '%';
+
+  document.getElementById('ct-commit').textContent  = c.states.COMMIT;
+  document.getElementById('ct-hold').textContent    = c.states.HOLD;
+  document.getElementById('ct-wait').textContent    = c.states.WAIT;
+  document.getElementById('ct-consult').textContent = c.states.CONSULT;
+  document.getElementById('ct-toxic').textContent   = c.states.TOXIC;
+}
+
+// ─── Rendering ─────────────────────────────────────────
+function renderRows() {
+  const rows = document.getElementById('rows');
+  const empty = document.getElementById('empty-state');
+  const ledger = document.getElementById('ledger');
+
+  if (receipts.length === 0) {
+    empty.style.display = 'block';
+    ledger.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  ledger.style.display = 'block';
+
+  let filtered = [...receipts];
+  if (activeFilter === 'unresolved') {
+    filtered = filtered.filter(r => !r.outcome || r.outcome === '');
+  } else if (activeFilter !== 'all') {
+    filtered = filtered.filter(r => r.state === activeFilter);
+  }
+
+  // newest first
+  filtered.sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+
+  rows.innerHTML = filtered.map((r, idx) => {
+    const origIdx = receipts.indexOf(r);
+    const date = r.timestamp ? r.timestamp.slice(0, 10) : '—';
+    const state = (r.state || 'WAIT').toLowerCase();
+    const C = (r.C != null) ? Number(r.C).toFixed(2) : '—';
+    const tau = (r.tau != null) ? Number(r.tau).toFixed(2) : '—';
+
+    return `
+      <div class="row">
+        <div class="date">${date}</div>
+        <div class="decision">
+          ${escapeHtml(r.decision_name || '(unnamed decision)')}
+          <span class="domain">${escapeHtml(r.domain || 'general')}${r.brake === 'ENGAGED' ? ' · BRAKE' : ''}</span>
+        </div>
+        <div><span class="state-pill ${state}">${r.state || 'WAIT'}</span></div>
+        <div class="metric">${C} / ${tau}</div>
+        <div>
+          <select class="action-sel" data-idx="${origIdx}" data-field="action">
+            <option value=""        ${!r.action            ? 'selected' : ''}>—</option>
+            <option value="committed" ${r.action === 'committed' ? 'selected' : ''}>Committed</option>
+            <option value="resized"   ${r.action === 'resized'   ? 'selected' : ''}>Resized</option>
+            <option value="cancelled" ${r.action === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+            <option value="overrode"  ${r.action === 'overrode'  ? 'selected' : ''}>Overrode</option>
+          </select>
+        </div>
+        <div>
+          <select class="outcome-sel" data-idx="${origIdx}" data-field="outcome">
+            <option value=""      ${!r.outcome           ? 'selected' : ''}>—</option>
+            <option value="win"   ${r.outcome === 'win'  ? 'selected' : ''}>Win</option>
+            <option value="loss"  ${r.outcome === 'loss' ? 'selected' : ''}>Loss</option>
+            <option value="na"    ${r.outcome === 'na'   ? 'selected' : ''}>N/A</option>
+          </select>
+        </div>
+        <div class="row-actions">
+          <input class="pnl-input" type="text" placeholder="$" value="${escapeHtml(r.pnl || '')}" data-idx="${origIdx}" data-field="pnl">
+          <button class="icon-btn delete" data-del="${origIdx}" title="Delete">✕</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // bind events
+  rows.querySelectorAll('.action-sel, .outcome-sel, .pnl-input').forEach(el => {
+    el.addEventListener('change', onFieldChange);
+    el.addEventListener('blur', onFieldChange);
+  });
+  rows.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.del);
+      receipts.splice(idx, 1);
+      saveReceipts();
+      renderAll();
+    });
+  });
+  rows.querySelectorAll('.pnl-input').forEach(el => {
+    const v = el.value.trim();
+    if (v.startsWith('-') || v.startsWith('−')) el.classList.add('negative');
+    else if (v) el.classList.add('positive');
+  });
+}
+
+function onFieldChange(e) {
+  const idx = parseInt(e.target.dataset.idx);
+  const field = e.target.dataset.field;
+  receipts[idx][field] = e.target.value;
+  saveReceipts();
+  renderCalibration();
+  if (field === 'pnl') {
+    e.target.classList.remove('positive', 'negative');
+    const v = e.target.value.trim();
+    if (v.startsWith('-') || v.startsWith('−')) e.target.classList.add('negative');
+    else if (v) e.target.classList.add('positive');
+  }
+}
+
+function renderAll() {
+  renderCalibration();
+  renderRows();
+}
+
+// ─── Add receipt ──────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  if (id === 'modal-add') {
+    document.getElementById('json-input').value = '';
+    document.getElementById('name-input').value = '';
+    document.getElementById('domain-input').value = '';
+    document.getElementById('add-msg').innerHTML = '';
+    setTimeout(() => document.getElementById('json-input').focus(), 50);
+  }
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+document.getElementById('btn-add').addEventListener('click', () => openModal('modal-add'));
+
+document.getElementById('btn-save-receipt').addEventListener('click', () => {
+  const raw = document.getElementById('json-input').value.trim();
+  const nameOverride = document.getElementById('name-input').value.trim();
+  const domainOverride = document.getElementById('domain-input').value.trim();
+  const msg = document.getElementById('add-msg');
+
+  if (!raw) {
+    msg.innerHTML = '<div class="error">Paste a receipt JSON.</div>';
+    return;
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (e) {
+    msg.innerHTML = '<div class="error">Invalid JSON: ' + escapeHtml(e.message) + '</div>';
+    return;
+  }
+  if (!parsed.state) {
+    msg.innerHTML = '<div class="error">Missing required field: state.</div>';
+    return;
+  }
+
+  // normalize
+  const receipt = {
+    timestamp:     parsed.timestamp || new Date().toISOString(),
+    decision_name: nameOverride || parsed.decision_name || '(unnamed decision)',
+    domain:        domainOverride || parsed.domain || 'general',
+    state:         parsed.state,
+    C:             parsed.C,
+    tau:           parsed.tau,
+    S:             parsed.S,
+    brake:         parsed.brake || 'DISENGAGED',
+    decision_id:   parsed.decision_id || randomId(),
+    reasoning:     parsed.reasoning || '',
+    per_axis:      parsed.per_axis || {},
+    weights:       parsed.weights || {},
+    r_eff:         parsed.r_eff || null,
+    action:        '',
+    outcome:       '',
+    pnl:           '',
+  };
+  receipts.push(receipt);
+  saveReceipts();
+  renderAll();
+  closeModal('modal-add');
+});
+
+// ─── Export / Import ──────────────────────────────────
+document.getElementById('btn-export').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(receipts, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'nerva-ledger-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('btn-import').addEventListener('click', () => {
+  document.getElementById('file-import').click();
+});
+document.getElementById('file-import').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (!Array.isArray(imported)) throw new Error('Expected an array of receipts.');
+      receipts = receipts.concat(imported);
+      saveReceipts();
+      renderAll();
+    } catch (err) {
+      alert('Import failed: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+// ─── Clear ────────────────────────────────────────────
+document.getElementById('btn-clear').addEventListener('click', () => openModal('modal-clear'));
+document.getElementById('btn-confirm-clear').addEventListener('click', () => {
+  receipts = [];
+  saveReceipts();
+  renderAll();
+  closeModal('modal-clear');
+});
+
+// ─── Filter chips ─────────────────────────────────────
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeFilter = chip.dataset.filter;
+    renderRows();
+  });
+});
+
+// click backdrop to close modal
+document.querySelectorAll('.modal-shade').forEach(s => {
+  s.addEventListener('click', (e) => { if (e.target === s) s.classList.remove('open'); });
+});
+
+// ─── Utilities ────────────────────────────────────────
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function randomId() {
+  return Math.random().toString(36).slice(2, 14);
+}
+
+// ─── Boot ─────────────────────────────────────────────
+loadReceipts();
+renderAll();
+saveReceipts();  // sets "updated"
+</script>
+
+</body>
+</html>

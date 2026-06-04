@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NERVA · Decision Receipt · a7c2f9b41d83</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink:        #0B1220;
+  --ink-2:      #0F172A;
+  --ink-3:      #1A2336;
+  --bone:       #F1EFE8;
+  --bone-dim:   #D6D2C4;
+  --slate:      #8A8A82;
+  --slate-2:    #5F5E5A;
+  --amber:      #C8841C;
+  --amber-dim:  #8A5B14;
+  --sky:        #1E3A6B;
+  --sky-bright: #4A78C2;
+  --green:      #2F7A52;
+  --green-br:   #4FB07A;
+  --red:        #7A2E2E;
+  --red-br:     #C26B6B;
+  --pink:       #D173A0;
+  --violet:     #9B7BD4;
+  --rule:       #2A3344;
+  --rule-soft:  #1A2336;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: var(--ink);
+  color: var(--bone);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at top, rgba(30, 58, 107, 0.08), transparent 60%),
+    radial-gradient(ellipse at bottom, rgba(200, 132, 28, 0.04), transparent 70%),
+    var(--ink);
+  min-height: 100vh;
+  padding: 48px 24px 64px;
+  display: flex;
+  justify-content: center;
+}
+
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  z-index: 100;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.receipt {
+  width: 100%;
+  max-width: 820px;
+  background: linear-gradient(180deg, var(--ink-2) 0%, var(--ink) 100%);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 48px 56px 40px;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(241, 239, 232, 0.02) inset, 0 24px 80px -20px rgba(0,0,0,0.6);
+  animation: rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes rise { from { opacity: 1; transform: translateY(0); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .receipt { animation: none !important; } }
+
+.receipt::before, .receipt::after {
+  content: ""; position: absolute;
+  width: 18px; height: 18px;
+  border: 1px solid var(--amber-dim);
+  opacity: 0.5;
+}
+.receipt::before { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+.receipt::after  { bottom: 12px; right: 12px; border-left: none; border-top: none; }
+
+@keyframes fadeIn { from { opacity: 1; transform: translateY(0); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse  { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes fillGrow { from { transform: scaleX(1); } }
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+/* ───────── MASTHEAD ───────── */
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 36px;
+  font-family: 'JetBrains Mono', monospace;
+  animation: fadeIn 600ms 60ms both;
+}
+.mh-left { display: flex; flex-direction: column; gap: 12px; }
+.mark {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.26em; text-transform: uppercase;
+  color: var(--bone); white-space: nowrap;
+}
+.mark span { color: var(--amber); }
+.mark .sub { color: var(--slate); letter-spacing: 0.2em; }
+
+.signals { display: flex; align-items: center; gap: 16px; font-size: 9px; letter-spacing: 0.16em; }
+.sig { display: inline-flex; align-items: center; gap: 6px; color: var(--slate-2); }
+.sig .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--slate-2); }
+.sig.on    { color: var(--bone); }
+.sig.on .dot   { background: var(--green-br); box-shadow: 0 0 6px var(--green-br); animation: pulse 2.2s infinite; }
+.sig.warn  { color: var(--amber); }
+.sig.warn .dot { background: var(--amber); box-shadow: 0 0 6px var(--amber); animation: pulse 1.4s infinite; }
+
+.mh-right { text-align: right; display: flex; flex-direction: column; gap: 5px; font-size: 9.5px; letter-spacing: 0.1em; color: var(--slate-2); white-space: nowrap; }
+.mh-right .ses { color: var(--slate); }
+.mh-right .ses b { color: var(--bone-dim); font-weight: 500; }
+.mh-right .hash { color: var(--bone-dim); font-weight: 500; letter-spacing: 0.14em; }
+.mh-right .clk  { color: var(--slate-2); }
+
+/* mode toggle pill */
+.modepill { align-self: flex-end; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rule); padding: 4px 10px; margin-bottom: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.18em; }
+.mode-btn { background: none; border: 0; padding: 0; margin: 0; font: inherit; letter-spacing: inherit; text-transform: uppercase; color: var(--slate-2); cursor: pointer; transition: color 140ms ease; }
+.mode-btn:hover { color: var(--bone-dim); }
+.mode-btn.active, .mode-btn.active:hover { color: var(--amber); }
+.mp-sep { color: var(--slate-2); }
+
+/* mode visibility */
+.receipt .audit-only { display: none; }
+.receipt.audit .audit-only { display: block; }
+
+/* bottom telemetry strip */
+.telemetry { margin-top: 24px; padding: 11px 14px; background: rgba(11,18,32,0.6); border: 1px solid var(--rule); font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--slate); letter-spacing: 0.04em; display: flex; align-items: center; gap: 14px; overflow: hidden; position: relative; }
+.telemetry::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--amber); opacity: 0.6; }
+.telemetry .stream { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.telemetry .stream b { color: var(--bone-dim); font-weight: 500; }
+.telemetry .stream .amber { color: var(--amber); }
+.telemetry .stream .sep { color: var(--slate-2); margin: 0 9px; }
+.telemetry .cursor { display: inline-block; width: 6px; height: 10px; background: var(--amber); margin-left: 4px; animation: blink 1s steps(2) infinite; vertical-align: -1px; flex: none; }
+
+/* ───────── SCORED DECISION ───────── */
+.label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.26em;
+  text-transform: uppercase; color: var(--slate);
+  margin-bottom: 16px;
+}
+.label .tag { color: var(--amber); }
+
+.scored { animation: fadeIn 600ms 140ms both; margin-bottom: 44px; }
+.scored .name {
+  font-family: 'Newsreader', serif;
+  font-size: 25px; font-weight: 400; line-height: 1.3;
+  color: var(--bone); letter-spacing: -0.01em;
+  max-width: 660px; margin-bottom: 24px;
+}
+.fields {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+  padding-top: 18px; border-top: 1px solid var(--rule-soft);
+  font-family: 'JetBrains Mono', monospace;
+}
+.fields .k { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--slate-2); margin-bottom: 8px; }
+.fields .v { font-size: 13px; color: var(--bone-dim); }
+
+/* ───────── VERDICT ───────── */
+.verdict-block { text-align: center; margin: 52px 0 44px; position: relative; animation: fadeIn 700ms 240ms both; }
+.verdict-block::before, .verdict-block::after {
+  content: ""; position: absolute; left: 50%; transform: translateX(-50%);
+  width: 90px; height: 1px; background: var(--rule);
+}
+.verdict-block::before { top: -22px; }
+.verdict-block::after  { bottom: -20px; }
+.verdict-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.34em;
+  text-transform: uppercase; color: var(--slate); margin-bottom: 14px;
+}
+.verdict {
+  font-family: 'Newsreader', serif;
+  font-size: clamp(76px, 13vw, 134px); font-weight: 300;
+  line-height: 0.92; letter-spacing: -0.045em;
+  color: var(--amber); margin: 0; font-style: italic;
+  display: inline-block;
+}
+.verdict.commit  { color: var(--green-br);  }
+.verdict.hold    { color: var(--sky-bright); }
+.verdict.wait    { color: var(--amber);      }
+.verdict.consult { color: var(--bone);       }
+.verdict.toxic   { color: var(--red-br);     }
+.verdict-sub {
+  font-family: 'Newsreader', serif; font-style: italic; font-weight: 300;
+  font-size: 15px; color: var(--bone-dim); margin-top: 16px; letter-spacing: 0.01em;
+}
+
+/* ───────── METER ───────── */
+.meter { margin: 44px 0; animation: fadeIn 700ms 360ms both; }
+.meter-row {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate);
+  display: flex; justify-content: space-between; margin-bottom: 12px;
+}
+.meter-track { position: relative; height: 4px; background: var(--ink-3); }
+.meter-fill {
+  position: absolute; left: 0; top: 0; bottom: 0; background: var(--amber);
+  animation: fillGrow 900ms 600ms cubic-bezier(0.16, 1, 0.3, 1) both; transform-origin: left;
+}
+.meter-tau { position: absolute; top: -6px; bottom: -6px; width: 1px; background: var(--bone); }
+.meter-tau::after { content: "τ"; position: absolute; top: -16px; left: 50%; transform: translateX(-50%); font-family: 'Newsreader', serif; font-style: italic; font-size: 13px; color: var(--bone); }
+.meter-c { position: absolute; top: -6px; bottom: -6px; width: 1px; background: var(--amber); }
+.meter-c::after { content: "C"; position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; color: var(--amber); }
+
+.meter-values { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 30px; font-family: 'JetBrains Mono', monospace; }
+.meter-values .cell { border-top: 1px solid var(--rule); padding-top: 12px; }
+.meter-values .lbl { font-size: 9px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--slate); }
+.meter-values .val { font-size: 22px; font-weight: 400; color: var(--bone); margin-top: 4px; letter-spacing: -0.01em; }
+.meter-values .val.dim { color: var(--slate); font-size: 15px; }
+
+/* ───────── BLOCH + REASONING ───────── */
+.body-grid { display: grid; grid-template-columns: 170px 1fr; gap: 40px; margin-top: 40px; align-items: start; animation: fadeIn 700ms 480ms both; }
+.bloch { position: relative; width: 170px; height: 170px; overflow: hidden; }
+.bloch svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.bloch::after { content: ""; position: absolute; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--amber) 50%, transparent); opacity: 0.35; animation: scan 3.6s linear infinite; pointer-events: none; }
+@keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+.bloch-label { margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate); text-align: center; }
+
+.reasoning { font-family: 'Newsreader', serif; font-size: 17px; line-height: 1.62; color: var(--bone); font-weight: 300; letter-spacing: 0.005em; }
+.reasoning .lead { font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; color: var(--slate); display: block; margin-bottom: 14px; }
+.reasoning .drop { font-family: 'Newsreader', serif; font-size: 54px; font-weight: 400; line-height: 0.82; float: left; padding: 8px 10px 0 0; color: var(--amber); }
+.reasoning em { font-style: italic; color: var(--bone-dim); }
+
+/* ───────── INSTRUMENT CLUSTER ───────── */
+.cluster { margin-top: 52px; border: 1px solid var(--rule); background: var(--ink); animation: fadeIn 700ms 580ms both; }
+.cluster-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 18px; border-bottom: 1px solid var(--rule);
+  font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--slate-2);
+}
+.cluster-head .ch-l { color: var(--bone-dim); letter-spacing: 0.24em; }
+.cluster-head .live { display: inline-flex; align-items: center; gap: 6px; }
+.cluster-head .live .d { width: 5px; height: 5px; border-radius: 50%; background: var(--green-br); box-shadow: 0 0 5px var(--green-br); animation: pulse 1.8s infinite; }
+
+.cluster-grid {
+  display: grid;
+  grid-template-columns: 1.08fr 0.92fr;
+  grid-template-areas: "qlt map" "fac sen" "log log";
+  gap: 1px; background: var(--rule);
+}
+.panel { background: var(--ink-2); padding: 18px 20px; }
+.panel.qlt { grid-area: qlt; }
+.panel.map { grid-area: map; }
+.panel.fac { grid-area: fac; }
+.panel.sen { grid-area: sen; }
+.panel.log { grid-area: log; }
+
+.panel-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.14em;
+}
+.panel-head .tt { color: var(--slate); text-transform: uppercase; letter-spacing: 0.18em; }
+.panel-head .tag { color: var(--amber); margin-right: 6px; }
+.panel-head .meta { color: var(--slate-2); font-size: 9px; letter-spacing: 0.1em; }
+
+/* quality metrics */
+.qrow { display: grid; grid-template-columns: 104px 1fr 38px; gap: 12px; align-items: center; margin-bottom: 9px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; }
+.qrow .ql { color: var(--slate); letter-spacing: 0.06em; }
+.qrow .qt { height: 7px; background: var(--ink-3); position: relative; overflow: hidden; }
+.qrow .qf { position: absolute; left: 0; top: 0; bottom: 0; background: var(--bone-dim); animation: fillGrow 800ms 700ms cubic-bezier(0.16,1,0.3,1) both; transform-origin: left; }
+.qrow .qf.amber { background: var(--amber); box-shadow: 0 0 6px rgba(200,132,28,.45); }
+.qrow .qv { text-align: right; color: var(--bone); }
+.qrow .qv.amber { color: var(--amber); }
+
+/* factors signed */
+.frow { display: grid; grid-template-columns: 96px 1fr 50px; gap: 12px; align-items: center; margin-bottom: 9px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; }
+.frow .fl { color: var(--slate); letter-spacing: 0.06em; }
+.ftrack { position: relative; height: 7px; background: var(--ink-3); }
+.ftrack .zero { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--slate-2); }
+.ftrack .ff { position: absolute; top: 0; bottom: 0; animation: fillGrow 800ms 760ms cubic-bezier(0.16,1,0.3,1) both; }
+.ftrack .ff.pos { left: 50%; background: var(--green-br); transform-origin: left; }
+.ftrack .ff.neg { right: 50%; background: var(--red-br); transform-origin: right; }
+.frow .fv { text-align: right; }
+.frow .fv.pos { color: var(--green-br); }
+.frow .fv.neg { color: var(--red-br); }
+
+/* sensitivity */
+.srow { display: grid; grid-template-columns: 90px 52px 1fr; gap: 8px; align-items: center; margin-bottom: 9px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; }
+.srow .sa { color: var(--sky-bright); letter-spacing: 0.04em; }
+.srow .sd { color: var(--slate); }
+.srow .sr { text-align: right; color: var(--slate-2); letter-spacing: 0.04em; }
+.srow .sr.flip { color: var(--amber); }
+.sen-note { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule-soft); font-family: 'JetBrains Mono', monospace; font-size: 9px; line-height: 1.6; color: var(--slate-2); letter-spacing: 0.02em; }
+
+/* phase map */
+.map svg { display: block; width: 100%; height: auto; }
+.map-foot { margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.08em; color: var(--slate-2); display: flex; justify-content: space-between; }
+.map-foot .pos { color: var(--amber); }
+
+/* agent log */
+.log .panel-head { margin-bottom: 12px; }
+.logline { display: grid; grid-template-columns: 14px 64px 1fr; gap: 12px; padding: 3px 0; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.01em; align-items: baseline; }
+.logline .li { color: var(--slate-2); }
+.logline .lv { color: var(--amber); }
+.logline .lx { color: var(--bone-dim); }
+.logline .lx .mut { color: var(--slate); }
+.logline .lx .ok { color: var(--green-br); }
+
+/* ───────── PROVENANCE ───────── */
+.provenance { margin-top: 48px; border-top: 1px solid var(--rule); padding-top: 30px; animation: fadeIn 700ms 700ms both; }
+.axes { display: grid; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.axis { display: grid; grid-template-columns: 150px 56px 1fr 56px; gap: 16px; align-items: center; color: var(--bone-dim); padding: 2px 0; }
+.axis .name { color: var(--slate); letter-spacing: 0.04em; }
+.axis .c { color: var(--bone); text-align: right; }
+.axis .w { color: var(--slate-2); text-align: right; }
+.axis .bar { position: relative; height: 2px; background: var(--ink-3); }
+.axis .bar > span { position: absolute; left: 0; top: 0; bottom: 0; background: var(--bone-dim); animation: fillGrow 700ms 820ms cubic-bezier(0.16,1,0.3,1) both; transform-origin: left; }
+.density { margin-top: 26px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--slate); line-height: 1.95; letter-spacing: 0.02em; }
+.density .f { color: var(--bone-dim); }
+.density .a { color: var(--amber); }
+
+/* ───────── RECEIPT FIELDS ───────── */
+.ledger { margin-top: 44px; border-top: 1px solid var(--rule); padding-top: 30px; animation: fadeIn 700ms 800ms both; }
+.ledger-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-family: 'JetBrains Mono', monospace; }
+.fg .fgl { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--slate); margin-bottom: 12px; }
+.checks { display: flex; flex-wrap: wrap; gap: 14px; }
+.check { display: inline-flex; align-items: center; gap: 8px; color: var(--bone-dim); font-size: 11px; letter-spacing: 0.04em; cursor: pointer; user-select: none; }
+.check input { appearance: none; width: 12px; height: 12px; border: 1px solid var(--slate-2); background: transparent; position: relative; cursor: pointer; }
+.check input:checked { background: var(--amber); border-color: var(--amber); }
+.check input:checked::after { content: ""; position: absolute; width: 4px; height: 7px; left: 3px; top: 1px; border-bottom: 1.5px solid var(--ink); border-right: 1.5px solid var(--ink); transform: rotate(45deg); }
+.pnl { display: flex; align-items: baseline; gap: 8px; margin-top: 12px; }
+.pnl span { color: var(--slate); font-size: 11px; }
+.pnl input { flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--slate-2); color: var(--bone); font-family: 'JetBrains Mono', monospace; font-size: 13px; padding: 4px 0; }
+.pnl input:focus { outline: none; border-bottom-color: var(--amber); }
+
+/* ───────── FOOTER ───────── */
+.foot { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: baseline; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--slate-2); animation: fadeIn 700ms 880ms both; }
+.foot .id { color: var(--slate); }
+.foot .sg { color: var(--bone-dim); font-family: 'Newsreader', serif; font-style: italic; font-size: 12px; letter-spacing: 0.02em; text-transform: none; }
+
+@media (max-width: 720px) {
+  .receipt { padding: 32px 22px; }
+  .fields { grid-template-columns: 1fr 1fr; }
+  .body-grid { grid-template-columns: 1fr; }
+  .bloch { margin: 0 auto; }
+  .cluster-grid { grid-template-columns: 1fr; grid-template-areas: "qlt" "map" "fac" "sen" "log"; }
+  .ledger-grid { grid-template-columns: 1fr; }
+  .meter-values { grid-template-columns: 1fr 1fr; }
+  .axis { grid-template-columns: 120px 46px 1fr 46px; gap: 10px; font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="receipt">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="mh-left">
+      <div class="mark">NERVA <span>·</span> <span class="sub">Decision Receipt</span></div>
+      <div class="signals">
+        <span class="sig on"   title="Kernel signal lock"><span class="dot"></span>LOCK</span>
+        <span class="sig"      title="One-Way Brake (disengaged)"><span class="dot"></span>BRAKE</span>
+        <span class="sig"      title="Override flag (off)"><span class="dot"></span>OVR</span>
+        <span class="sig on"   title="Provenance receipt signed"><span class="dot"></span>SIG</span>
+      </div>
+    </div>
+    <div class="mh-right">
+      <div class="modepill" role="group" aria-label="Receipt mode">
+        <button type="button" class="mode-btn active" data-mode="summary">SUMMARY</button>
+        <span class="mp-sep">·</span>
+        <button type="button" class="mode-btn" data-mode="audit">AUDIT</button>
+      </div>
+      <div class="ses">SES <b>A7C2-F9B4</b> · NERVA-BLOCH <b>v11</b></div>
+      <div class="hash">a7c2f9b41d83</div>
+      <div class="clk">2026-06-04 · 18:42:00 UTC</div>
+    </div>
+  </div>
+
+  <!-- SCORED DECISION -->
+  <section class="scored">
+    <div class="label"><span class="tag">&lt;DEC&gt;</span> What was scored</div>
+    <div class="name">Buy a new road bike for $4,200 — existing bike serviceable; thesis is improved training</div>
+    <div class="fields">
+      <div><div class="k">Stakes</div><div class="v">$4,200</div></div>
+      <div><div class="k">Horizon</div><div class="v">Open</div></div>
+      <div><div class="k">Reversibility</div><div class="v">Partial · resale</div></div>
+      <div><div class="k">Domain</div><div class="v">Personal</div></div>
+    </div>
+  </section>
+
+  <!-- VERDICT -->
+  <div class="verdict-block">
+    <div class="verdict-eyebrow">Verdict</div>
+    <h1 class="verdict wait">WAIT</h1>
+    <div class="verdict-sub">C below τ · brake disengaged · thesis names no falsifier</div>
+  </div>
+
+  <!-- METER -->
+  <div class="meter">
+    <div class="meter-row">
+      <span>Confidence vs. threshold</span>
+      <span>C&nbsp;&nbsp;0.16&nbsp;&nbsp;·&nbsp;&nbsp;τ&nbsp;&nbsp;0.69&nbsp;&nbsp;·&nbsp;&nbsp;Δ&nbsp;&nbsp;−0.53</span>
+    </div>
+    <div class="meter-track">
+      <div class="meter-fill" style="width: 16%;"></div>
+      <div class="meter-c"   style="left: 16%;"></div>
+      <div class="meter-tau" style="left: 69%;"></div>
+    </div>
+    <div class="meter-values">
+      <div class="cell"><div class="lbl">C — confidence</div><div class="val">0.1580</div></div>
+      <div class="cell"><div class="lbl">τ — threshold</div><div class="val">0.6920</div></div>
+      <div class="cell"><div class="lbl">S — entropy</div><div class="val">0.9810</div></div>
+      <div class="cell"><div class="lbl">One-way brake</div><div class="val dim">DISENGAGED</div></div>
+    </div>
+  </div>
+
+  <!-- BLOCH + REASONING -->
+  <div class="body-grid">
+    <div>
+      <div class="bloch">
+        <svg viewBox="-100 -100 200 200">
+          <circle cx="0" cy="0" r="80" fill="none" stroke="#2A3344" stroke-width="1"/>
+          <ellipse cx="0" cy="0" rx="80" ry="22" fill="none" stroke="#2A3344" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.7"/>
+          <line x1="-80" y1="0" x2="80" y2="0" stroke="#1A2336" stroke-width="0.6"/>
+          <line x1="0" y1="-80" x2="0" y2="80" stroke="#1A2336" stroke-width="0.6"/>
+          <!-- threshold ring at |r| = τ·80 = 55.4 -->
+          <circle cx="0" cy="0" r="55.4" fill="none" stroke="#F1EFE8" stroke-width="0.6" stroke-dasharray="1 2" opacity="0.4"/>
+          <text x="0" y="-60" text-anchor="middle" font-family="Newsreader" font-style="italic" font-size="10" fill="#F1EFE8" opacity="0.55">τ</text>
+          <!-- shrunken vector: |r| = C = 0.158 → 12.6px, projected (x≈1.9, z≈12.5) -->
+          <line x1="0" y1="0" x2="1.9" y2="-12.5" stroke="#C8841C" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="1.9" cy="-12.5" r="3" fill="#C8841C"/>
+          <circle cx="0" cy="0" r="1.5" fill="#F1EFE8" opacity="0.7"/>
+          <text x="85" y="3"  font-family="JetBrains Mono" font-size="8" fill="#5F5E5A">x</text>
+          <text x="-3" y="-85" font-family="JetBrains Mono" font-size="8" fill="#5F5E5A">z</text>
+        </svg>
+      </div>
+      <div class="bloch-label">|r_eff| = 0.158</div>
+    </div>
+
+    <div class="reasoning">
+      <span class="lead">Reasoning</span>
+      <span class="drop">T</span>he strongest axis is alignment, and even it sits at 0.20 — your $4,200 stake is well above the weight of evidence presented for the thesis. The weakest is falsifiability: you have not named a single observation that would tell you, three months out, that the bike failed its claim. The thesis is behavioral — <em>this will get me back into serious training</em> — but the evidence offered is desire duration (six months of wanting) and a value-anchor (the wheels alone are worth $800). Neither bears on whether ownership causes the behavior. Equipment-as-motivation is a documented anti-pattern; you are asking a frame to do the work of a habit. Re-run with a real falsifier and a real catalyst, or resize the question: what is the cheapest experiment that tests whether you actually train more?
+    </div>
+  </div>
+
+  <!-- PROVENANCE -->
+  <div class="provenance">
+    <div class="label"><span class="tag">&lt;PRV&gt;</span> Provenance · per-axis confidence</div>
+    <div class="axes">
+      <div class="axis"><span class="name">evidence</span><span class="c">0.150</span><span class="bar"><span style="width:15%;"></span></span><span class="w">w 0.30</span></div>
+      <div class="axis"><span class="name">differentiation</span><span class="c">0.200</span><span class="bar"><span style="width:20%;"></span></span><span class="w">w 0.25</span></div>
+      <div class="axis"><span class="name">falsifiability</span><span class="c">0.100</span><span class="bar"><span style="width:10%;"></span></span><span class="w">w 0.20</span></div>
+      <div class="axis"><span class="name">timing</span><span class="c">0.150</span><span class="bar"><span style="width:15%;"></span></span><span class="w">w 0.15</span></div>
+      <div class="axis"><span class="name">alignment</span><span class="c">0.200</span><span class="bar"><span style="width:20%; background:var(--amber);"></span></span><span class="w">w 0.10</span></div>
+    </div>
+    <div class="density">
+      <div><span class="f">C</span> = Σ wᵢ·cᵢ = 0.30(0.15)+0.25(0.20)+0.20(0.10)+0.15(0.15)+0.10(0.20) = <span class="f">0.158</span></div>
+      <div><span class="f">τ</span> = τ₀ + α·S + β·σ_stakes + γ·irr = 0.50 + 0.15(0.98) + 0.10(0.45) + 0.05(0) = <span class="a">0.692</span></div>
+      <div><span class="f">r_eff</span> = ( +0.024, +0.062, +0.157 ) &nbsp;·&nbsp; <span class="f">ρ</span> = ½ ( I + r_eff·σ ) &nbsp;·&nbsp; S(ρ) = 0.981</div>
+    </div>
+  </div>
+
+  <!-- INSTRUMENT CLUSTER (Audit mode only) -->
+  <div class="audit-only">
+  <section class="cluster">
+    <div class="cluster-head">
+      <span class="ch-l">Instrument cluster · audit</span>
+      <span class="live"><span class="d"></span>NERVA-BLOCH v11 · live readout</span>
+    </div>
+    <div class="cluster-grid">
+
+      <!-- QUALITY METRICS -->
+      <div class="panel qlt">
+        <div class="panel-head"><span><span class="tag">&lt;QLT&gt;</span><span class="tt">Quality metrics</span></span><span class="meta">0–1 · kernel</span></div>
+        <div class="qrow"><span class="ql">PURITY</span><span class="qt"><span class="qf" style="width:16%;"></span></span><span class="qv">0.16</span></div>
+        <div class="qrow"><span class="ql">ENTROPY</span><span class="qt"><span class="qf amber" style="width:98%;"></span></span><span class="qv amber">0.98</span></div>
+        <div class="qrow"><span class="ql">MARGIN</span><span class="qt"><span class="qf" style="width:23%;"></span></span><span class="qv">0.23</span></div>
+        <div class="qrow"><span class="ql">BRAKE GAP</span><span class="qt"><span class="qf" style="width:20%;"></span></span><span class="qv">0.20</span></div>
+        <div class="qrow"><span class="ql">REVERSIBLE</span><span class="qt"><span class="qf" style="width:55%;"></span></span><span class="qv">0.55</span></div>
+        <div class="qrow"><span class="ql">HOMOGENEITY</span><span class="qt"><span class="qf" style="width:86%;"></span></span><span class="qv">0.86</span></div>
+      </div>
+
+      <!-- PHASE MAP -->
+      <div class="panel map">
+        <div class="panel-head"><span><span class="tag">&lt;MAP&gt;</span><span class="tt">Phase map</span></span><span class="meta">C × clarity</span></div>
+        <svg viewBox="0 0 220 168">
+          <rect x="1" y="1" width="218" height="166" fill="none" stroke="#1A2336" stroke-width="1"/>
+          <!-- quadrant tints -->
+          <rect x="110" y="1"  width="109" height="83" fill="rgba(47,122,82,0.10)"/>
+          <rect x="1"   y="1"  width="109" height="83" fill="rgba(74,120,194,0.07)"/>
+          <rect x="1"   y="84" width="109" height="83" fill="rgba(200,132,28,0.07)"/>
+          <rect x="110" y="84" width="109" height="83" fill="rgba(122,46,46,0.10)"/>
+          <line x1="110" y1="1" x2="110" y2="167" stroke="#2A3344" stroke-width="0.8" stroke-dasharray="2 3"/>
+          <line x1="1" y1="84" x2="219" y2="84" stroke="#2A3344" stroke-width="0.8" stroke-dasharray="2 3"/>
+          <text x="160" y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="11" letter-spacing="1" fill="#4FB07A" opacity="0.8">COMMIT</text>
+          <text x="56"  y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="11" letter-spacing="1" fill="#4A78C2" opacity="0.7">HOLD</text>
+          <text x="56"  y="130" text-anchor="middle" font-family="JetBrains Mono" font-size="11" letter-spacing="1" fill="#C8841C" opacity="0.9">WAIT</text>
+          <text x="160" y="130" text-anchor="middle" font-family="JetBrains Mono" font-size="11" letter-spacing="1" fill="#C26B6B" opacity="0.7">CONSULT</text>
+          <!-- position dot: x = C·218 = 35, y = (1−clarity)·168; clarity = 1−S = 0.02 → y≈164 -->
+          <circle cx="35" cy="164" r="13" fill="none" stroke="#C8841C" stroke-width="0.7" opacity="0.3"/>
+          <circle cx="35" cy="164" r="7"  fill="none" stroke="#C8841C" stroke-width="0.9" opacity="0.55"/>
+          <circle cx="35" cy="164" r="3.4" fill="#C8841C"/>
+          <text x="9" y="14" font-family="JetBrains Mono" font-size="7.5" fill="#5F5E5A">clarity↑</text>
+          <text x="200" y="162" font-family="JetBrains Mono" font-size="7.5" fill="#5F5E5A">C →</text>
+        </svg>
+        <div class="map-foot"><span>locus (C, 1−S)</span><span class="pos">WAIT · low-C / high-S</span></div>
+      </div>
+
+      <!-- FACTORS -->
+      <div class="panel fac">
+        <div class="panel-head"><span><span class="tag">&lt;FAC&gt;</span><span class="tt">Factors</span></span><span class="meta">signed · cᵢ − 0.5</span></div>
+        <div class="frow"><span class="fl">EVIDENCE</span><span class="ftrack"><span class="zero"></span><span class="ff neg" style="width:35%;"></span></span><span class="fv neg">−0.35</span></div>
+        <div class="frow"><span class="fl">DIFFERENTN</span><span class="ftrack"><span class="zero"></span><span class="ff neg" style="width:30%;"></span></span><span class="fv neg">−0.30</span></div>
+        <div class="frow"><span class="fl">FALSIFIER</span><span class="ftrack"><span class="zero"></span><span class="ff neg" style="width:40%;"></span></span><span class="fv neg">−0.40</span></div>
+        <div class="frow"><span class="fl">TIMING</span><span class="ftrack"><span class="zero"></span><span class="ff neg" style="width:35%;"></span></span><span class="fv neg">−0.35</span></div>
+        <div class="frow"><span class="fl">ALIGNMENT</span><span class="ftrack"><span class="zero"></span><span class="ff neg" style="width:30%;"></span></span><span class="fv neg">−0.30</span></div>
+      </div>
+
+      <!-- SENSITIVITY -->
+      <div class="panel sen">
+        <div class="panel-head"><span><span class="tag">&lt;SEN&gt;</span><span class="tt">Sensitivity</span></span><span class="meta">+0.1 · what flips</span></div>
+        <div class="srow"><span class="sa">EVIDENCE</span><span class="sd">+0.030</span><span class="sr">— stable</span></div>
+        <div class="srow"><span class="sa">DIFFERENTN</span><span class="sd">+0.025</span><span class="sr">— stable</span></div>
+        <div class="srow"><span class="sa">FALSIFIER</span><span class="sd">+0.020</span><span class="sr">— stable</span></div>
+        <div class="srow"><span class="sa">TIMING</span><span class="sd">+0.015</span><span class="sr">— stable</span></div>
+        <div class="srow"><span class="sa">ALIGNMENT</span><span class="sd">+0.010</span><span class="sr">— stable</span></div>
+        <div class="sen-note">No single +0.1 perturbation clears τ (Δ = −0.53). Verdict robust — a flip needs evidence <span style="color:var(--bone-dim)">and</span> falsifier together.</div>
+      </div>
+
+      <!-- AGENT LOG -->
+      <div class="panel log">
+        <div class="panel-head"><span><span class="tag">&lt;LOG&gt;</span><span class="tt">Agent log</span></span><span class="meta">8 steps · 94ms</span></div>
+        <div class="logline"><span class="li">I</span><span class="lv">parse</span><span class="lx">scenario tokens=41 model=nerva-bloch-v11</span></div>
+        <div class="logline"><span class="li">I</span><span class="lv">extract</span><span class="lx">c_e=0.15 c_d=0.20 c_f=0.10 c_t=0.15 c_a=0.20</span></div>
+        <div class="logline"><span class="li">I</span><span class="lv">brake</span><span class="lx">reversibility=0.55 <span class="mut">→ disarmed</span></span></div>
+        <div class="logline"><span class="li">I</span><span class="lv">bloch</span><span class="lx">r=( 0.024, 0.062, 0.157 )</span></div>
+        <div class="logline"><span class="li">I</span><span class="lv">compute</span><span class="lx">C=0.158 τ=0.692 S(ρ)=0.981</span></div>
+        <div class="logline"><span class="li">I</span><span class="lv">verdict</span><span class="lx">WAIT <span class="mut">·</span> Δ=−0.534</span></div>
+        <div class="logline"><span class="li">I</span><span class="lv">audit</span><span class="lx">components_consistent=<span class="ok">true</span></span></div>
+        <div class="logline"><span class="li">I</span><span class="lv">route</span><span class="lx">ledger-append <span class="ok">ok</span></span></div>
+      </div>
+
+    </div>
+  </section>
+  </div>
+
+  <!-- RECEIPT FIELDS -->
+  <div class="ledger">
+    <div class="label"><span class="tag">&lt;RCT&gt;</span> Receipt — for your ledger</div>
+    <div class="ledger-grid">
+      <div class="fg">
+        <div class="fgl">Action taken</div>
+        <div class="checks">
+          <label class="check"><input type="checkbox"> Committed</label>
+          <label class="check"><input type="checkbox"> Resized</label>
+          <label class="check"><input type="checkbox" checked> Cancelled</label>
+          <label class="check"><input type="checkbox"> Overrode</label>
+        </div>
+      </div>
+      <div class="fg">
+        <div class="fgl">Outcome (at 6-week reread)</div>
+        <div class="checks">
+          <label class="check"><input type="checkbox"> Trained more</label>
+          <label class="check"><input type="checkbox"> No change</label>
+          <label class="check"><input type="checkbox" checked> N/A yet</label>
+        </div>
+        <div class="pnl"><span>Notes</span><input type="text" placeholder="—"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="foot">
+    <span class="id">a7c2f9b41d83</span>
+    <span class="sg">Starpoint LLC · NERVA v11 · patent pending</span>
+  </div>
+
+  <!-- BOTTOM TELEMETRY STRIP -->
+  <div class="telemetry">
+    <span class="stream">
+      <b>FRAME</b> <span id="frame">000118</span><span class="sep">·</span>
+      <b>C</b> <span class="amber">0.158</span><span class="sep">·</span>
+      <b>τ</b> 0.692<span class="sep">·</span>
+      <b>S</b> 0.981<span class="sep">·</span>
+      <b>Δ</b> <span class="amber">−0.534</span><span class="sep">·</span>
+      <b>BRAKE</b> DISENGAGED<span class="sep">·</span>
+      <b>STATE</b> <span class="amber">WAIT</span><span class="sep">·</span>
+      <b>ρ</b> ½(I+r·σ)<span class="sep">·</span>
+      <b>r</b> (0.024, 0.062, 0.157)<span class="sep">·</span>
+      <b>HASH</b> a7c2f9b41d83
+    </span>
+    <span class="cursor"></span>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    var receipt = document.querySelector('.receipt');
+    var btns = document.querySelectorAll('.mode-btn');
+    var KEY = 'nerva-receipt-mode';
+    function setMode(mode) {
+      var audit = mode === 'audit';
+      receipt.classList.toggle('audit', audit);
+      btns.forEach(function (b) { b.classList.toggle('active', b.dataset.mode === mode); });
+      try { localStorage.setItem(KEY, mode); } catch (e) {}
+    }
+    btns.forEach(function (b) { b.addEventListener('click', function () { setMode(b.dataset.mode); }); });
+    var saved = 'summary';
+    try { saved = localStorage.getItem(KEY) || 'summary'; } catch (e) {}
+    setMode(saved);
+
+    // Bottom telemetry strip — the frame counter is the only animated content.
+    var frame = 118;
+    var frameEl = document.getElementById('frame');
+    setInterval(function () { frame += 1; if (frameEl) frameEl.textContent = String(frame).padStart(6, '0'); }, 1200);
+  })();
+</script>
+
+</body>
+</html>
