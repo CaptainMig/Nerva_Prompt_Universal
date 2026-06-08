@@ -4,10 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NERVA · Portable Decision-Gating Kit</title>
+<meta name="description" content="A decision-gating kernel that sits between AI reasoning and high-stakes action. Five-state output: COMMIT, HOLD, WAIT, CONSULT, TOXIC. By Starpoint LLC.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,700;1,6..72,400&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -23,7 +24,11 @@
   --sky:        #1E3A6B;
   --sky-bright: #4A78C2;
   --green:      #2F7A52;
+  --green-br:   #4FB07A;
+  --red:        #7A2E2E;
+  --red-br:     #C26B6B;
   --rule:       #2A3344;
+  --rule-soft:  #1A2336;
 }
 
 * { box-sizing: border-box; }
@@ -35,6 +40,7 @@ html, body {
   font-family: 'Inter', system-ui, sans-serif;
   font-weight: 300;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -43,7 +49,7 @@ body {
     radial-gradient(ellipse at bottom, rgba(200, 132, 28, 0.04), transparent 70%),
     var(--ink);
   min-height: 100vh;
-  padding: 56px 24px 96px;
+  padding: 48px 24px 64px;
   display: flex;
   justify-content: center;
 }
@@ -52,343 +58,452 @@ body::before {
   content: "";
   position: fixed; inset: 0;
   pointer-events: none;
-  opacity: 0.03;
+  opacity: 0.035;
   z-index: 100;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
-.wrap {
+.page {
   width: 100%;
-  max-width: 880px;
+  max-width: 980px;
   position: relative;
-  animation: rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-@keyframes rise {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── header strip ─── */
-.strip {
+/* MASTHEAD */
+.masthead {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  padding-bottom: 22px;
+  margin-bottom: 36px;
+  border-bottom: 1px solid var(--rule);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.22em;
+  font-size: 11px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--slate);
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--rule);
-  margin-bottom: 48px;
-  gap: 16px;
-  flex-wrap: wrap;
 }
-.strip .mark { color: var(--bone); }
-.strip .mark span { color: var(--amber); }
+.mh-left .mark {
+  color: var(--bone);
+  font-weight: 500;
+}
+.mh-left .mark span { color: var(--amber); margin: 0 4px; }
+.mh-left .sub { color: var(--slate); font-weight: 300; }
 .signals {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.18em;
+  display: flex; gap: 16px;
+  margin-top: 8px;
 }
 .sig {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--bone);
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--slate-2);
 }
 .sig .dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 6px var(--green);
-  animation: pulse 2.2s infinite;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--slate-2);
 }
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.35; }
-}
+.sig.on { color: var(--bone-dim); }
+.sig.on .dot { background: var(--green-br); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
 
-/* ─── title block ─── */
-.lede {
+.mh-right { text-align: right; }
+.mh-right .ses { color: var(--bone-dim); }
+.mh-right .ses b { color: var(--amber); font-weight: 500; }
+.mh-right .build { color: var(--slate-2); margin-top: 4px; font-size: 10px; }
+
+/* HERO */
+.hero {
   margin-bottom: 56px;
 }
 .eyebrow {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.3em;
+  font-size: 11px;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--slate);
-  margin-bottom: 18px;
+  color: var(--amber);
+  margin-bottom: 24px;
 }
-h1 {
+h1.title {
+  font-family: 'Newsreader', serif;
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  color: var(--bone);
+  margin: 0 0 28px 0;
+}
+h1.title em {
+  font-style: italic;
+  color: var(--amber);
+}
+.lede {
   font-family: 'Newsreader', serif;
   font-weight: 300;
-  font-size: clamp(48px, 7vw, 76px);
-  line-height: 1;
-  letter-spacing: -0.025em;
-  color: var(--bone);
-  margin: 0 0 12px;
-}
-h1 .sep { color: var(--amber); font-weight: 400; padding: 0 4px; }
-.subtitle {
-  font-family: 'Newsreader', serif;
-  font-style: italic;
-  font-size: 19px;
+  font-size: 20px;
+  line-height: 1.55;
   color: var(--bone-dim);
-  margin: 0;
-  letter-spacing: 0.005em;
-  max-width: 620px;
-  line-height: 1.4;
+  max-width: 720px;
+  margin: 0 0 18px 0;
+}
+.lede strong {
+  color: var(--bone);
+  font-weight: 500;
 }
 
-/* ─── card grid ─── */
-.grid {
+/* SECTION HEADERS */
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 56px 0 24px 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.sec-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.sec-title {
+  font-family: 'Newsreader', serif;
+  font-weight: 400;
+  font-size: 24px;
+  color: var(--bone);
+}
+.sec-meta {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--slate-2);
+}
+
+/* CARD GRID */
+.cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin-bottom: 64px;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+@media (min-width: 760px) {
+  .cards {
+    grid-template-columns: 1fr 1fr;
+  }
+  .cards .card.featured {
+    grid-column: 1 / -1;
+  }
 }
 
 .card {
   display: block;
   text-decoration: none;
+  color: inherit;
   background: linear-gradient(180deg, var(--ink-2) 0%, var(--ink) 100%);
   border: 1px solid var(--rule);
   border-radius: 2px;
-  padding: 32px 28px 28px;
+  padding: 28px 30px;
   position: relative;
-  transition: border-color 200ms, transform 200ms;
-  color: var(--bone);
-  min-height: 220px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.card::before,
-.card::after {
-  content: "";
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border: 1px solid var(--amber-dim);
-  opacity: 0.45;
-  transition: opacity 200ms;
-}
-.card::before {
-  top: 8px; left: 8px;
-  border-right: none; border-bottom: none;
-}
-.card::after {
-  bottom: 8px; right: 8px;
-  border-left: none; border-top: none;
+  transition: border-color 200ms ease, transform 200ms ease;
 }
 .card:hover {
-  border-color: var(--amber);
-  transform: translateY(-2px);
+  border-color: var(--amber-dim);
+  transform: translateY(-1px);
 }
-.card:hover::before,
-.card:hover::after {
-  opacity: 1;
+.card.featured {
+  padding: 36px 40px;
+  border-color: var(--rule);
 }
+.card.featured:hover { border-color: var(--sky-bright); }
 
-.card .tag {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--amber);
-  margin-bottom: 16px;
-}
-.card .title {
-  font-family: 'Newsreader', serif;
-  font-weight: 400;
-  font-size: 22px;
-  color: var(--bone);
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-  margin-bottom: 10px;
-}
-.card .blurb {
-  font-family: 'Newsreader', serif;
-  font-style: italic;
-  font-weight: 300;
-  font-size: 14px;
-  color: var(--bone-dim);
-  line-height: 1.5;
-  margin-bottom: 24px;
-  flex-grow: 1;
-}
-.card .chev {
+.card-tag {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--bone-dim);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 12px;
-  border-top: 1px solid var(--rule);
-}
-.card .chev .arrow {
-  color: var(--amber);
-  font-size: 14px;
-  transition: transform 200ms;
-}
-.card:hover .chev .arrow {
-  transform: translateX(4px);
-}
-
-/* ─── info block ─── */
-.info {
-  border: 1px solid var(--rule);
-  border-radius: 2px;
-  padding: 32px 40px;
-  margin-bottom: 48px;
-  background: rgba(15, 23, 42, 0.4);
-  position: relative;
-}
-.info::before {
-  content: "";
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 2px;
-  background: var(--amber);
-  opacity: 0.5;
-}
-.info-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.3em;
+  letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--slate);
   margin-bottom: 14px;
 }
-.info-body {
-  font-family: 'Newsreader', serif;
-  font-weight: 300;
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--bone-dim);
-  margin: 0;
+.card.featured .card-tag { color: var(--sky-bright); }
+
+.card-state {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  vertical-align: middle;
 }
-.info-body code {
+.card-state.hold { color: var(--sky-bright); }
+.card-state.wait { color: var(--amber); }
+
+.card-title {
+  font-family: 'Newsreader', serif;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.25;
+  color: var(--bone);
+  margin: 0 0 12px 0;
+}
+.card.featured .card-title {
+  font-size: 28px;
+}
+.card-body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--bone-dim);
+  margin: 0 0 18px 0;
+}
+.card.featured .card-body { font-size: 15px; max-width: 620px; }
+.card-cta {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  background: var(--ink-3);
-  padding: 2px 6px;
-  border-radius: 1px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   color: var(--amber);
-  letter-spacing: 0.02em;
+}
+.card.featured .card-cta { color: var(--sky-bright); }
+.card-cta::after { content: " →"; }
+
+/* HOW BLOCK */
+.how {
+  margin-top: 56px;
+  padding: 36px 40px;
+  background: linear-gradient(180deg, var(--ink-2) 0%, var(--ink) 100%);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+.how-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.how-steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--bone-dim);
+}
+@media (min-width: 760px) {
+  .how-steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 32px;
+  }
+}
+.how-steps .step {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+}
+.how-steps .num {
+  color: var(--amber);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  min-width: 22px;
+}
+.how-steps .text {
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 300;
+}
+.how-steps .text strong {
+  color: var(--bone);
+  font-weight: 500;
 }
 
-/* ─── footer ─── */
+/* FOOTER */
 .foot {
+  margin-top: 64px;
   padding-top: 24px;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--rule-soft);
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.24em;
+  font-size: 10px;
+  letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--slate-2);
-  flex-wrap: wrap;
-  gap: 12px;
 }
-.foot .sig {
-  font-family: 'Newsreader', serif;
-  font-style: italic;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  text-transform: none;
+.foot-links {
+  display: flex; gap: 24px;
+  flex-wrap: wrap;
+}
+.foot-links a {
   color: var(--bone-dim);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+.foot-links a:hover { color: var(--amber); }
+.foot-links a::before { content: "↗ "; color: var(--slate-2); }
+
+.foot-right {
+  color: var(--slate-2);
 }
 
-@media (max-width: 640px) {
-  body { padding: 32px 18px 64px; }
-  h1 { font-size: 44px; }
-  .info { padding: 24px 24px 24px 28px; }
-  .card { padding: 26px 22px 22px; min-height: 200px; }
+/* TELEMETRY */
+.telemetry {
+  margin-top: 24px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule-soft);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--slate-2);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
 }
+.telemetry b { color: var(--bone-dim); font-weight: 500; margin-right: 6px; }
+.telemetry .sep { color: var(--slate-2); margin: 0 8px; }
+.telemetry .amber { color: var(--amber); }
+.telemetry .cursor {
+  display: inline-block;
+  width: 7px; height: 11px;
+  background: var(--amber);
+  margin-left: 8px;
+  animation: blink 1s steps(2) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<div class="page">
 
-  <div class="strip">
-    <div class="mark">NERVA <span>·</span> Portable Decision-Gating Kit</div>
-    <div class="signals">
-      <span class="sig"><span class="dot"></span>KIT ONLINE</span>
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="mh-left">
+      <div class="mark">NERVA <span>·</span> Portable Decision-Gating Kit</div>
+      <div class="signals">
+        <span class="sig on"><span class="dot"></span>KIT ONLINE</span>
+        <span class="sig on"><span class="dot"></span>v11</span>
+        <span class="sig"><span class="dot"></span>STARPOINT LLC</span>
+      </div>
     </div>
-    <div>v11 · STARPOINT LLC</div>
+    <div class="mh-right">
+      <div class="ses">SES <b>NERVA-PUB</b> · BUILD <b>v11</b></div>
+      <div class="build">Decision-gating kernel · five-state output</div>
+    </div>
   </div>
 
-  <div class="lede">
-    <div class="eyebrow">Decision-gating kernel · five-state output</div>
-    <h1>NERVA<span class="sep">·</span>Kit</h1>
-    <p class="subtitle">A portable instrument for gating high-stakes decisions. Paste the prompt into any language model. Score a decision against a kernel that refuses by default. Log the receipt. The discipline is the product.</p>
-  </div>
-
-  <div class="grid">
-
-    <a class="card" href="nerva-verdict-card.html">
-      <div>
-        <div class="tag">Reference · Market</div>
-        <div class="title">Verdict card example</div>
-        <div class="blurb">Kalshi · Monaco GP · YES Antonelli @ 18¢. The reference card showing what a NERVA verdict looks like in the prediction-market domain. Toggle Summary / Audit modes.</div>
-      </div>
-      <div class="chev">
-        <span>View card</span>
-        <span class="arrow">→</span>
-      </div>
-    </a>
-
-    <a class="card" href="nerva-verdict-roadbike.html">
-      <div>
-        <div class="tag">Reference · Personal</div>
-        <div class="title">Roadbike example</div>
-        <div class="blurb">A personal-domain decision. Same template, different stakes. Demonstrates how the kernel handles non-market decisions with the same discipline.</div>
-      </div>
-      <div class="chev">
-        <span>View card</span>
-        <span class="arrow">→</span>
-      </div>
-    </a>
-
-    <a class="card" href="nerva-ledger.html">
-      <div>
-        <div class="tag">Tool · Ledger</div>
-        <div class="title">Open my ledger</div>
-        <div class="blurb">Every receipt. Every outcome. Browser-local storage, no server. Calibration panel computes the running lift score. Becomes meaningful at thirty resolved decisions.</div>
-      </div>
-      <div class="chev">
-        <span>Open ledger</span>
-        <span class="arrow">→</span>
-      </div>
-    </a>
-
-  </div>
-
-  <div class="info">
-    <div class="info-label">How the kit is used</div>
-    <p class="info-body">
-      Open the prompt in a Claude Project, ChatGPT, or Gemini chat. Paste a screenshot of a decision you are considering, or describe it. Answer four questions — thesis, evidence, falsifier, why now. NERVA returns a verdict card and a JSON receipt. Paste the receipt into the ledger above. When the decision resolves, mark the outcome. The lift score is whatever the lift score is.
+  <!-- HERO -->
+  <section class="hero">
+    <div class="eyebrow">NERVA · Decision integrity layer</div>
+    <h1 class="title">A brake with <em>provenance</em>.</h1>
+    <p class="lede">
+      NERVA sits between reasoning and action — human or agentic — and returns a structured verdict against five published axes: <strong>COMMIT</strong>, <strong>HOLD</strong>, <strong>WAIT</strong>, <strong>CONSULT</strong>, <strong>TOXIC</strong>. Every decision is scored, written to an audit ledger, and reversible by design.
     </p>
+    <p class="lede">
+      The personal-kit deployment is live and producing real receipts. The architectural extension into agentic gating — a runtime decision layer sitting above operational telemetry — is where the actual market sits.
+    </p>
+  </section>
+
+  <!-- REFERENCE CARDS -->
+  <div class="sec-head">
+    <span class="sec-tag">&lt;REF&gt;</span>
+    <span class="sec-title">Reference verdicts</span>
+    <span class="sec-meta">live · three domains</span>
   </div>
 
+  <div class="cards">
+
+    <!-- FEATURED · B2B -->
+    <a class="card featured" href="nerva-verdict-b2b.html">
+      <div class="card-tag">Reference · Enterprise <span class="card-state hold">HOLD</span></div>
+      <h2 class="card-title">Operator governance: pre-deploy gate on an agentic-AI configuration change</h2>
+      <p class="card-body">
+        A retailer's ops team proposes raising the agent's upsell threshold from 0.71 → 0.78 on a single pilot category. NERVA scores the change before it ships. The verdict clears τ by 0.01 — a real but narrow margin — and returns <strong>HOLD</strong> with a named release condition: the 21-day stability window completes on Jun 14. Not a refusal. A defined wait state with a clock on it.
+      </p>
+      <span class="card-cta">View card</span>
+    </a>
+
+    <!-- MARKET -->
+    <a class="card" href="nerva-verdict-card.html">
+      <div class="card-tag">Reference · Market <span class="card-state wait">WAIT</span></div>
+      <h2 class="card-title">Prediction-market trade · Kalshi</h2>
+      <p class="card-body">
+        A YES position on a binary-resolution prediction market. Strongest axis: falsifiability. Weakest: differentiation — the thesis agrees with the market and pays the market's price. C below τ. <strong>WAIT.</strong>
+      </p>
+      <span class="card-cta">View card</span>
+    </a>
+
+    <!-- PERSONAL -->
+    <a class="card" href="nerva-verdict-roadbike.html">
+      <div class="card-tag">Reference · Personal <span class="card-state wait">WAIT</span></div>
+      <h2 class="card-title">Personal-domain decision</h2>
+      <p class="card-body">
+        A $4,200 equipment purchase with a behavioral thesis and no falsifier. Demonstrates the kernel handling a non-market decision with the same discipline. Toggle SUMMARY / AUDIT modes for the full instrument cluster.
+      </p>
+      <span class="card-cta">View card</span>
+    </a>
+
+  </div>
+
+  <!-- LEDGER -->
+  <div class="sec-head">
+    <span class="sec-tag">&lt;LOG&gt;</span>
+    <span class="sec-title">The ledger</span>
+    <span class="sec-meta">browser-local · sovereign</span>
+  </div>
+
+  <a class="card" href="nerva-ledger.html" style="display:block;">
+    <div class="card-tag">Tool · Ledger</div>
+    <h2 class="card-title">Open the receipt store</h2>
+    <p class="card-body">
+      Every receipt. Every outcome. Browser-local storage, no server. The calibration panel computes a running lift score against resolved outcomes. The score becomes meaningful at thirty resolved decisions. The discipline is the product; the ledger is its memory.
+    </p>
+    <span class="card-cta">Open ledger</span>
+  </a>
+
+  <!-- HOW -->
+  <div class="how">
+    <div class="how-head">
+      <span class="sec-tag">&lt;USE&gt;</span>
+      <span class="sec-title">How the kit is used</span>
+    </div>
+    <div class="how-steps">
+      <div class="step"><span class="num">01</span><span class="text"><strong>Open the prompt</strong> in a Claude Project, ChatGPT, or Grok chat. Cross-platform verified on Claude; methodology testing underway on Grok.</span></div>
+      <div class="step"><span class="num">02</span><span class="text"><strong>Submit a decision</strong> — paste a screenshot, paste a document, or describe it in prose. NERVA extracts the structural fields.</span></div>
+      <div class="step"><span class="num">03</span><span class="text"><strong>Answer four questions:</strong> thesis, evidence, falsifier, why-now. NERVA refuses to score until all four resolve cleanly.</span></div>
+      <div class="step"><span class="num">04</span><span class="text"><strong>Receive the verdict card and JSON receipt.</strong> Toggle Summary mode for the daily read; Audit mode exposes the full instrument cluster.</span></div>
+      <div class="step"><span class="num">05</span><span class="text"><strong>Log the receipt</strong> in the browser-local ledger. The receipt is yours; nothing leaves your device unless you choose to share it.</span></div>
+      <div class="step"><span class="num">06</span><span class="text"><strong>Mark the outcome when the decision resolves.</strong> The lift score is whatever the lift score is. Published openly.</span></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
   <div class="foot">
-    <span>Portable · Browser-local · Sovereign</span>
-    <span class="sig">Starpoint LLC · NERVA v11 · patent pending</span>
+    <div class="foot-links">
+      <a href="https://github.com/CaptainMig/Nerva_Prompt_Universal" target="_blank" rel="noopener">GitHub repo</a>
+      <a href="https://www.linkedin.com/in/amigliazzo/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://anthonycharts.com" target="_blank" rel="noopener">AnthonyCharts</a>
+    </div>
+    <div class="foot-right">Starpoint LLC · NERVA v11 · patent pending</div>
+  </div>
+
+  <div class="telemetry">
+    <span>
+      <b>BUILD</b> v11<span class="sep">·</span>
+      <b>STATE</b> <span class="amber">KIT ONLINE</span><span class="sep">·</span>
+      <b>REF</b> 3 domains<span class="sep">·</span>
+      <b>LEDGER</b> browser-local<span class="sep">·</span>
+      <b>VERIFY</b> claude.ai · grok<span class="sep">·</span>
+      <b>HASH</b> nerva-pub-v11
+    </span>
+    <span class="cursor"></span>
   </div>
 
 </div>
