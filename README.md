@@ -6,7 +6,7 @@ Five files. One discipline.
 
 A way to invoke NERVA from any language model — Claude, ChatGPT, Gemini — without leaving the chat. Paste the prompt once, drop in a screenshot or description of a decision you are considering, and NERVA returns a structured verdict in the same visual language every time. Log the receipt to the ledger. After thirty receipts, you have a calibration story.
 
-Built originally for Kalshi trade gating, but the prompt is domain-agnostic. Works on any decision that has stakes, a time horizon, and a thesis you can articulate.
+Built originally for prediction market gating, but the prompt is domain-agnostic. Works on any decision that has stakes, a time horizon, and a thesis you can articulate.
 
 ## The five files
 
