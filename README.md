@@ -18,6 +18,32 @@ Built originally for prediction market gating, but the prompt is domain-agnostic
 | `nerva-ledger.html` | The receipt store. Browser-local (no server, no account). Holds every receipt, computes the running lift score, tracks resolution outcomes. Export to JSON to back up or move between devices. |
 | `README.md` | This file. |
 
+Also in the repo: `nerva_gate.py` (the v11.1 escalation gate, below), `bench_kernel.py` (wall-clock benchmark for `score()`), and `tests/`.
+
+## v11.1 escalation gate (`nerva_gate.py`)
+
+Branch `v11.1-fallback`, unmerged until the verdict diff in nerva-v10 has been reviewed by a person.
+
+The kernel scores; the gate decides what the actuator path may do while an escalation is unanswered. ESCALATE used to assume an operator would answer. The gate bounds the wait: it re-signals on a backoff schedule, falls back to a hold when the operator is unreachable, invokes the integrator's `safe_action()` if one was supplied (the gate never invents a motion), and records all of it on the receipt. No path turns an unanswered ESCALATE into COMMIT. TOXIC releases only to an operator.
+
+States: `COMMIT · HOLD · WAIT · ESCALATE_PENDING · FALLBACK_HOLD · TOXIC_LATCHED`. Reasons: `uncertainty`, `emergency_irreversible`, `low_confidence_foundation`; only `uncertainty` can be released by evidence (signal ≥ Θ + δ for k consecutive ticks). For this kit the kernel's CONSULT verdict is the ask-a-human path and maps to `uncertainty` (`escalation_from_kit_verdict`). The JS mirror is `nerva-v11-gate.js` in nerva-v10; keep the two in step.
+
+Parameters (provisional, hand-set, to be calibrated):
+
+| Parameter | Value | Note |
+|---|---|---|
+| `T_esc` | 5 s sim time | first escalation timeout |
+| `N_retry` | 3 | retries before fallback |
+| `backoff_factor` | 2 | each retry waits twice as long |
+| δ | 0.08 | release margin above the bar, unchanged from v11 |
+| k | 20 ticks (2.0 s at 10 Hz) | dwell above bar + δ, unchanged from v11 |
+
+Run the tests from the repo root:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
 ## How to use it (the workflow)
 
 1. **Once.** Open Claude. Start a new Project called *NERVA Decisions* (or similar). Paste the contents of `NERVA_DECISION_PROMPT.md` into the Project Instructions field. Done — this persists.
