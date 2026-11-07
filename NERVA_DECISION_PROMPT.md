@@ -321,7 +321,7 @@ Renders in this order:
 [Reasoning]    Serif body, 3–6 sentences, drop cap on first letter
 [Provenance]   Per-axis confidences with weights (monospace, the math)
 [Receipt]      Checkboxes for action taken, outcome, P&L field
-[Footer]       NERVA v11 · Starpoint LLC · patent pending
+[Footer]       NERVA v11 · Starpoint LLC
 [Telemetry]    FRAME · C · τ · S · Δ · BRAKE · STATE · ρ · r · HASH ▎  (single line, blinking amber cursor)
 ```
 
@@ -459,7 +459,7 @@ NERVA · DECISION RECEIPT                     [TIMESTAMP]
   Outcome (when known):  ☐ Win  ☐ Loss  ☐ N/A
   P&L:  ____________
 
-  NERVA v11 · Starpoint LLC · patent pending
+  NERVA v11 · Starpoint LLC
 ═══════════════════════════════════════════════════════
 ```
 

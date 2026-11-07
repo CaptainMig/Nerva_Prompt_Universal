@@ -6,7 +6,7 @@ Use this to verify verdicts produced by an LLM running the NERVA Decision Prompt
 If the LLM's approximation diverges from this implementation on C or tau by more
 than 0.05, trust this file.
 
-Starpoint LLC · patent pending
+Starpoint LLC
 """
 
 from __future__ import annotations
@@ -381,7 +381,7 @@ def _print_receipt(v: Verdict, d: DecisionInput) -> None:
     print( "  Outcome:         [ ] Win  [ ] Loss  [ ] N/A")
     print( "  P&L: __________")
     print()
-    print( "  NERVA v11 · Starpoint LLC · patent pending")
+    print( "  NERVA v11 · Starpoint LLC")
     print(bar)
 
 

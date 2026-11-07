@@ -81,4 +81,4 @@ The kernel is conservative by design. Most verdicts will be **WAIT**. That is th
 
 The lift score (hit rate when followed minus hit rate when overrode) becomes meaningful at thirty resolved decisions with at least ten overrides. Below that threshold it is suggestive; do not publish it as evidence.
 
-— Starpoint LLC · NERVA v11 · patent pending
+— Starpoint LLC · NERVA v11
